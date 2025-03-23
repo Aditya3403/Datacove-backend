@@ -34,6 +34,18 @@ const clientSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+
+    sharedDocs: [
+      {
+        docId: { type: String, ref: "Document" },
+        sharedByEmail: { type: String, ref: "User" },
+        sharedAt: { type: Date, default: Date.now },
+        sharedByName: { type: String, ref: "User" },
+        fileUrl: { type: String, required: true },
+        fileName: { type: String, required: true },
+      },
+    ],
+
     is_email_verified: { type: Boolean, default: false },
     notes: [
       {

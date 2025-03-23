@@ -45,34 +45,12 @@ const orgSchema = mongoose.Schema(
       },
     ],
     docs: [],
+    sharedDocs: [],
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
 
-    invitations: [
-      {
-        inviteeEmail: { type: String, required: true },
-
-        token: { type: String, required: true },
-        status: {
-          type: String,
-          enum: ["pending", "accepted", "rejected"],
-          default: "pending",
-        },
-        clientId: {
-          type: String,
-          unique: true,
-        },
-        invitedAt: { type: Date, default: Date.now },
-      },
-    ],
-    clients: [
-      {
-        inviterId: { type: String, required: true }, // Who invited them
-        name: { type: String, required: true },
-        email: { type: String, required: true },
-        userS3Bucket: { type: String, required: true },
-      },
-    ],
+    invitations: [],
+    clients: [],
   },
   {
     timestamps: true,

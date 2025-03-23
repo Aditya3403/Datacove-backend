@@ -4,7 +4,7 @@ import { ENV_VARS } from "../config/envVar.js";
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendOTP = async (email, otp) => {
-  const verificationLink = `http://localhost:5173/verify-email?email=${email}`;
+  const verificationLink = `http://localhost:5173/verify-email?email=${email}&otp=${otp}`;
   const msg = {
     to: email,
     from: ENV_VARS.SENDGRID_EMAIL, // Your verified sender email

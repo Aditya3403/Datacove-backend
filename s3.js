@@ -107,23 +107,23 @@ export const createUserBucket = async (userId, name) => {
   }
 };
 
-// const createFolderInBucket = async (bucketName, folderName) => {
-//   const folderKey = `${folderName}/`; // Folders in S3 are created as empty objects ending with "/"
+export const createFolderInBucket = async (bucketName, folderName) => {
+  const folderKey = `${folderName}/`; // Folders in S3 are created as empty objects ending with "/"
 
-//   try {
-//     const command = new PutObjectCommand({
-//       Bucket: bucketName,
-//       Key: folderKey,
-//     });
+  try {
+    const command = new PutObjectCommand({
+      Bucket: bucketName,
+      Key: folderKey,
+    });
 
-//     await s3.send(command);
-//     console.log(`Folder created in s3 bucket: ${folderKey} in ${bucketName}`);
-//     return folderKey;
-//   } catch (error) {
-//     console.error("Error creating folder in s3 bucket:", error);
-//     throw error;
-//   }
-// };
+    await s3.send(command);
+    console.log(`Folder created in s3 bucket: ${folderKey} in ${bucketName}`);
+    return folderKey;
+  } catch (error) {
+    console.error("Error creating folder in s3 bucket:", error);
+    throw error;
+  }
+};
 
 const uploadEmptyObject = async (inviterBucket, clientFolderName) => {
   try {

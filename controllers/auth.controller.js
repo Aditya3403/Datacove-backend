@@ -190,10 +190,10 @@ export async function OrganizationSignUp(req, res) {
     });
 
     // Create an S3 bucket for the user
-    const bucketName = await createUserBucket(orgUser._id, orgUser.name);
+    // const bucketName = await createUserBucket(orgUser._id, orgUser.name);
 
-    // Update user with bucket info
-    orgUser.s3Bucket = bucketName;
+    // // Update user with bucket info
+    // orgUser.s3Bucket = bucketName;
     await orgUser.save();
 
     generateTokenAndSetCookie(orgUser._id, res);
@@ -214,13 +214,7 @@ export async function OrganizationSignUp(req, res) {
 
 export async function logout(req, res) {
   try {
-    console.log("Logout request received, Cookies:", req.cookies);
-    res.clearCookie("datacove-ai", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      path: "/", // Ensure path matches the original cookie
-    });
+    res.clearCookie("datacove-ai");
     res.status(200).json({
       success: true,
       message: "Logged out successfully",
@@ -257,12 +251,12 @@ export async function login(req, res) {
     // console.log("ACC", account);
 
     // Check if email is verified
-    // if (!account.is_email_verified) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Email not verified. Please verify your email.",
-    //   });
-    // }
+    if (!account.is_email_verified) {
+      return res.status(400).json({
+        success: false,
+        message: "Email not verified. Please verify your email.",
+      });
+    }
 
     const isPasswordCorrect = await bcryptjs.compare(
       password,
@@ -411,7 +405,7 @@ export async function verifyOTP(req, res) {
     const acc = user || org;
     // console.log("Acc from OTP ", acc);
 
-    if (acc.is_email_verified === true) {
+    if (acc.is_email_verified) {
       return res
         .status(400)
         .json({ success: false, message: "Email already verified" });

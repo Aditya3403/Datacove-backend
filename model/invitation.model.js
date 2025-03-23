@@ -21,11 +21,7 @@ const invitationSchema = mongoose.Schema(
       enum: ["pending", "accepted", "rejected"],
       default: "pending",
     },
-    clientId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      default: null,
-    },
+
     expiresAt: {
       type: Date,
       required: true,

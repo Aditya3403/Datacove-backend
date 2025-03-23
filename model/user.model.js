@@ -1,5 +1,21 @@
 import mongoose, { mongo } from "mongoose";
 
+const workflowSchema = new mongoose.Schema(
+  {
+    workflow_name: { type: String, required: true }, // Name of the workflow (e.g., "legal")
+    prompt: { type: String, required: true }, // Prompt related to the workflow
+    documents: [
+      {
+        title: { type: String, required: true }, // Document title
+        description: { type: String, required: true }, // Document description
+        s3_path: { type: String, required: true }, // S3 path of the document
+      },
+    ],
+    analysisOptions: { type: [String], required: true }, // Analysis options (e.g., "sentiment", "entity")
+  },
+  { timestamps: true }
+);
+
 const userSchema = mongoose.Schema(
   {
     userType: {
@@ -33,6 +49,7 @@ const userSchema = mongoose.Schema(
     },
 
     is_email_verified: { type: Boolean, default: false },
+    is_client_also: { type: Boolean, default: false },
     otp: { type: String },
     otpExpires: { type: Date },
 
@@ -44,26 +61,11 @@ const userSchema = mongoose.Schema(
       },
     ],
     docs: [],
-    resetPasswordToken: { type: String },
-    resetPasswordExpires: { type: Date },
+    workflows: [workflowSchema],
 
-    invitations: [
-      {
-        inviteeEmail: { type: String, required: true },
+    sharedDocs: [],
 
-        token: { type: String, required: true },
-        status: {
-          type: String,
-          enum: ["pending", "accepted", "rejected"],
-          default: "pending",
-        },
-        clientId: {
-          type: String,
-          unique: true,
-        },
-        invitedAt: { type: Date, default: Date.now },
-      },
-    ],
+    invitations: [],
     clients: [
       {
         inviterId: { type: String, required: true }, // Who invited them
@@ -73,14 +75,36 @@ const userSchema = mongoose.Schema(
         userS3Bucket: { type: String, required: true },
       },
     ],
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
 
-    // folders: [
-    //   {
-    //     name: { type: String, required: true },
-    //     displayName: { type: String, required: true },
-    //     // accessType: { type: String, enum: ["private", "public"], default: "private" }
-    //   },
-    // ],
+    membership: { type: mongoose.Schema.Types.ObjectId, ref: "Membership" },
+
+    folders: [
+      {
+        name: { type: String, required: true },
+        displayName: { type: String, required: true },
+        files: [
+          {
+            title: { type: String, required: true }, // Document title
+            description: { type: String, required: true }, // Document description
+            s3_path: { type: String, required: true }, // S3 path of the document
+            uploadedAt: { type: Date, default: Date.now }, // Timestamp of upload
+          },
+        ],
+        // accessType: { type: String, enum: ["private", "public"], default: "private" }
+      },
+    ],
+    invitationsReceived: [
+      {
+        inviterId: { type: String, required: true }, // Who sent the invitation
+        inviterName: { type: String, required: true }, // Name of the inviter
+        inviterEmail: { type: String, required: true }, // Email of the inviter
+        status: { type: String, enum: ["pending", "accepted", "declined"], default: "pending" }, // Status of the invitation
+        token: { type: String, required: true }, // Unique token for the invitation
+        createdAt: { type: Date, default: Date.now }, // Timestamp of the invitation
+      },
+    ],
   },
 
   {

@@ -3,30 +3,37 @@ import cors from "cors";
 import authRoutes from "./routes/auth.route.js";
 import dashboard from "./routes/dashboard.route.js";
 import upload from "./routes/upload.route.js";
+import membership from "./routes/membership.route.js";
+import workflow from "./routes/workflow.route.js";
 import { ENV_VARS } from "./config/envVar.js";
 import { connectDB } from "./config/db.js";
 import cookieParser from "cookie-parser";
-
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import multer from "multer";
 const app = express();
 
 const PORT = ENV_VARS.PORT;
 
 const corsOptions = {
-  origin: "https://cove-genai.netlify.app",
+  origin: "http://localhost:5173",
+  // origin: "https://cove-genai.netlify.app",
   credentials: true, // Allow cookies to be sent with requests
-  allowedHeaders: ["Content-Type", "Authorization"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 };
 
-app.use(cookieParser());
-app.use(cors(corsOptions));
-app.use(express.json());
+app.use(
+  "/api/v1/membership/webhook",
+  express.raw({ type: "application/json" })
+);
 
+app.use(express.json());
+app.use(cookieParser());
 app.use(cors(corsOptions));
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/dashboard", dashboard);
 app.use("/api/v1/upload", upload);
+app.use("/api/v1/membership", membership);
+app.use("/api/v1/workflows", workflow);
 
 app.get("/", (req, res) => {
   res.send("Server is ready on 5000");
