@@ -322,7 +322,7 @@ export const getSharedDocs = async (req, res) => {
     });
   }
 };
-// Backend route (add this to your existing routes)
+
 export const deleteSharedDoc = async (req, res) => {
   try {
     const { docId } = req.params;
