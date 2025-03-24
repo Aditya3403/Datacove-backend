@@ -283,6 +283,77 @@ export async function shareFile(req, res) {
   }
 }
 
+export const getSharedDocs = async (req, res) => {
+  try {
+    const user = req.user; // User is attached by the auth middleware
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Find the user and populate the sharedDocs array
+    const userWithSharedDocs = await User.findById(user._id)
+      .select('sharedDocs')
+      .lean();
+
+    console.log("User with shared docs:", userWithSharedDocs);
+
+    if (!userWithSharedDocs) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Return all documents in the sharedDocs array
+    return res.status(200).json({
+      success: true,
+      sharedDocs: userWithSharedDocs.sharedDocs || [] // Return empty array if sharedDocs is undefined
+    });
+
+  } catch (error) {
+    console.error("Error fetching shared documents:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
+// Backend route (add this to your existing routes)
+export const deleteSharedDoc = async (req, res) => {
+  try {
+    const { docId } = req.params;
+    const user = req.user;
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Remove the document from sharedDocs array
+    await User.findByIdAndUpdate(
+      user._id,
+      { $pull: { sharedDocs: { docId } }}
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Document removed from shared documents"
+    });
+  } catch (error) {
+    console.error("Error deleting shared document:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
+
 export async function legalWorkflow(req, res) {
   try {
     // Extract data from request

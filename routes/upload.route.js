@@ -7,7 +7,9 @@ import {
   shareFile,
   uploadClientFile,
   uploadFile,
-  deleteFile
+  deleteFile,
+  getSharedDocs,
+  deleteSharedDoc
 } from "../controllers/upload.controller.js";
 
 const storage = multer.memoryStorage();
@@ -26,4 +28,6 @@ router.post(
 );
 router.post("/delete-workflow-file", protectRoute, deleteWorkflowDocuments);
 router.post("/shareFile", protectRoute, shareFile);
+router.get("/sharedDocs", protectRoute, getSharedDocs);
+router.delete("/deleteSharedDoc/:docId", protectRoute, deleteSharedDoc);
 export default router;
